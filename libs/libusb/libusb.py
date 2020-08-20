@@ -4,12 +4,12 @@ import info
 
 class subinfo(info.infoclass):
     def setTargets(self):
-        for ver in ['1.0.22']:
+        for ver in ['1.0.23']:
             self.targets[ver] = 'https://github.com/libusb/libusb/releases/download/v' + ver + '/libusb-' + ver + '.tar.bz2'
             self.archiveNames[ver] = "libusb-%s.tar.gz" % ver
             self.targetInstSrc[ver] = 'libusb-' + ver
         self.description = 'Library for USB device access'
-        self.defaultTarget = '1.0.22'
+        self.defaultTarget = '1.0.23'
 
     def setDependencies(self):
         self.runtimeDependencies["virtual/base"] = "default"
