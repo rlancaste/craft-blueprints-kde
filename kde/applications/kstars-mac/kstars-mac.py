@@ -82,11 +82,11 @@ class Package(CMakePackageBase):
         #Copying things needed for MacOS KStars
         
         #	Defining Craft Directories
-        buildDir = self.buildDir()
-        sourceDir = self.sourceDir()
-        packageDir = self.packageDir()
-        imageDir = self.imageDir()
-        craftRoot = CraftCore.standardDirs.craftRoot()
+        buildDir = str(self.buildDir())
+        sourceDir = str(self.sourceDir())
+        packageDir = str(self.packageDir())
+        imageDir = str(self.imageDir())
+        craftRoot = str(CraftCore.standardDirs.craftRoot())
         KSTARS_APP = os.path.join(buildDir , 'kstars' , 'KStars.app')
         KSTARS_RESOURCES = os.path.join(KSTARS_APP , 'Contents' , 'Resources')
         KSTARS_PLUGINS = os.path.join(KSTARS_APP , 'Contents' , 'PlugIns')
