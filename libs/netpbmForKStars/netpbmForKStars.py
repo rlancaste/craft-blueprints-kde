@@ -79,7 +79,7 @@ class Package(MakeFilePackageBase):
         return True
         
     def install(self):
-        utils.system("make package pkgdir=" + self.imageDir())
+        utils.system("make package pkgdir=" + str(self.imageDir()))
         # Deleting the netpbm files which have licensing restrictions on distribution or are unknown status
         utils.deleteFile(os.path.join(self.imageDir(), 'bin', 'hpcdtoppm'))
         utils.deleteFile(os.path.join(self.imageDir(), 'bin', 'pcdindex'))
@@ -107,9 +107,9 @@ class Package(MakeFilePackageBase):
         
         utils.system("mkdir -p " + binaryDir)
         utils.system("mkdir -p " + libDir)
-        utils.system("cp " + self.imageDir() + "/bin/* " + binaryDir)
-        utils.system("cp -r " + self.imageDir() + "/include/* " + includeDir)
-        utils.system("cp " + self.imageDir() + "/lib/* " + libDir)
+        utils.system("cp " + str(self.imageDir()) + "/bin/* " + binaryDir)
+        utils.system("cp -r " + str(self.imageDir()) + "/include/* " + includeDir)
+        utils.system("cp " + str(self.imageDir()) + "/lib/* " + libDir)
         return True
 
 
