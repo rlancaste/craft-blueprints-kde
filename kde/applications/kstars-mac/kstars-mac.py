@@ -42,6 +42,7 @@ class subinfo(info.infoclass):
         self.runtimeDependencies["libs/wcslib"] = None
         self.runtimeDependencies["libs/libraw"] = None
         self.runtimeDependencies["libs/gsl"] = None
+        self.runtimeDependencies["libs/stellarsolver"] = None
         self.runtimeDependencies["qt-libs/qtkeychain"] = None
         
         self.runtimeDependencies["libs/libgphoto2"] = "default"
