@@ -31,5 +31,9 @@ class Package(AutoToolsPackageBase):
         " --prefix=" + prefix
 
 
-
+ #	Note that this setting of the environment flags to not have an error on implicit declarations of functions solves an error in building in XCode 12
+    def configure(self):
+        self.shell.environment["CFLAGS"]+="-Wno-implicit-function-declaration"
+        AutoToolsPackageBase.configure(self)
+        return True
 
