@@ -3,11 +3,12 @@ import info
 class subinfo(info.infoclass):
     def setTargets(self):
         self.versionInfo.setDefaultValues()
+        
         self.description = 'a desktop planetarium'
-        for ver in ['3.0.0']:
+        for ver in ['3.4.3']:
             self.targets[ver] = 'http://download.kde.org/stable/kstars/kstars-%s.tar.xz' % ver
             self.targetInstSrc[ver] = 'kstars-%s' % ver
-        self.defaultTarget = '3.0.0'
+        self.defaultTarget = '3.4.3'
         self.displayName = "KStars Desktop Planetarium"
 
     def setDependencies(self):
@@ -20,6 +21,7 @@ class subinfo(info.infoclass):
         self.runtimeDependencies["libs/qt5/qtwebsockets"] = None
         self.runtimeDependencies["kde/frameworks/tier1/kconfig"] = None
         self.runtimeDependencies["kde/frameworks/tier2/kdoctools"] = None
+        self.runtimeDependencies["kde/frameworks/tier2/kpackage"] = None
         self.runtimeDependencies["kde/frameworks/tier1/kwidgetsaddons"] = None
         self.runtimeDependencies["kde/frameworks/tier3/knewstuff"] = None
         self.runtimeDependencies["kde/frameworks/tier1/kdbusaddons"] = None
@@ -37,6 +39,7 @@ class subinfo(info.infoclass):
         self.runtimeDependencies["libs/indiclient"] = None
         self.runtimeDependencies["libs/libraw"] = None
         self.runtimeDependencies["libs/gsl"] = None
+        self.runtimeDependencies["libs/stellarsolver"] = None
         self.runtimeDependencies["qt-libs/qtkeychain"] = None
 
         # Install proper theme

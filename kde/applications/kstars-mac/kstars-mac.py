@@ -92,11 +92,6 @@ class Package(CMakePackageBase):
         KSTARS_PLUGINS = os.path.join(KSTARS_APP , 'Contents' , 'PlugIns')
         KStarsMacFiles = os.path.join(packageDir , 'KStarsMacFiles')
         
-        #	The Data Directory
-        utils.system("cp -rf " + imageDir + "/share/kstars " + KSTARS_RESOURCES)
-        #Note that the folder in the old script was called data, so that is what KStars is looking for.
-        utils.system("mv " + KSTARS_RESOURCES + "/kstars " + KSTARS_RESOURCES + "/data ")
-        
         #	The Translations Directory
         utils.system("cp -rf " + craftRoot + "/share/locale " + KSTARS_RESOURCES)
 				
