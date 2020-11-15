@@ -28,6 +28,7 @@ class Package(MakeFilePackageBase):
         self.subinfo.options.useShadowBuild = True
         
     def configure(self):
+        os.environ["CFLAGS"]+=" -Wno-implicit-function-declaration"
         self.enterSourceDir()
         craftLibDir = os.path.join(CraftCore.standardDirs.craftRoot(), 'lib')
         craftIncludeDir = os.path.join(CraftCore.standardDirs.craftRoot(), 'include')
