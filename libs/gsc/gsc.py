@@ -25,7 +25,7 @@ class Package(MakeFilePackageBase):
         self.subinfo.options.useShadowBuild = False
         
     def configure(self):
-        sourcedir = self.sourceDir()
+        sourcedir = str(self.sourceDir())
         utils.rmtree(os.path.join(sourcedir, 'bin-dos'))
         return True
     
@@ -33,7 +33,20 @@ class Package(MakeFilePackageBase):
         sourcedir = str(self.sourceDir())
         sourcesrc = os.path.join(sourcedir, 'src')
         os.chdir(sourcesrc)
-        utils.system(" ".join([self.makeProgram, self.makeOptions(self.subinfo.options.make.args)]))
+        
+        f1name = sourcedir + "/src/Makefile"
+        
+        f1 = open(f1name, 'r')
+        filedata = f1.read()
+        f1.close()
+        
+        filedata = filedata.replace('CC    = cc -I. -O', 'CC    = cc -I. -O ' + '-Wno-implicit-function-declaration')
+        
+        f1 = open(f1name, 'w')
+        f1.write(filedata)
+        f1.close()
+        
+        utils.system(" ".join([self.makeProgram, str(self.makeOptions(self.subinfo.options.make.args))]))
         utils.copyFile(os.path.join(sourcesrc,'gsc.exe'), os.path.join(sourcesrc,'gsc'))
         utils.copyFile(os.path.join(sourcesrc,'decode.exe'), os.path.join(sourcesrc,'decode'))
         
