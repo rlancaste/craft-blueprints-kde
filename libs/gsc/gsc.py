@@ -30,7 +30,7 @@ class Package(MakeFilePackageBase):
         return True
     
     def make(self):
-        sourcedir = self.sourceDir()
+        sourcedir = str(self.sourceDir())
         sourcesrc = os.path.join(sourcedir, 'src')
         os.chdir(sourcesrc)
         utils.system(" ".join([self.makeProgram, self.makeOptions(self.subinfo.options.make.args)]))
@@ -47,7 +47,7 @@ class Package(MakeFilePackageBase):
         
     def install(self):
             
-        sourcedir = self.sourceDir()
+        sourcedir = str(self.sourceDir())
         sourcesrc = os.path.join(sourcedir, 'src')
         craftbindir = os.path.join(CraftCore.standardDirs.craftRoot(), 'bin')
         gscdir = os.path.join(CraftCore.standardDirs.craftRoot(), 'gsc')
