@@ -25,7 +25,7 @@ class Package(AutoToolsPackageBase):
     def __init__( self, **args ):
         AutoToolsPackageBase.__init__( self )
         self.subinfo.options.configure.bootstrap = True
-        prefix = self.shell.toNativePath(CraftCore.standardDirs.craftRoot())
+        prefix = str(self.shell.toNativePath(CraftCore.standardDirs.craftRoot()))
         self.subinfo.options.configure.cflags += "-march=core2"
         self.subinfo.options.configure.cxxflags += "-march=core2"
         self.subinfo.options.configure.args += " --prefix=" + prefix

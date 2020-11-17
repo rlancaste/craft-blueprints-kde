@@ -24,7 +24,7 @@ from Package.AutoToolsPackageBase import *
 class Package(AutoToolsPackageBase):
     def __init__( self, **args ):
         AutoToolsPackageBase.__init__( self )
-        prefix = self.shell.toNativePath(CraftCore.standardDirs.craftRoot())
+        prefix = str(self.shell.toNativePath(CraftCore.standardDirs.craftRoot()))
         self.subinfo.options.configure.args += "--disable-dependency-tracking" \
         " --prefix=" + prefix + "" \
         " --enable-gobject=yes" \
