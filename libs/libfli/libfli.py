@@ -26,5 +26,5 @@ from Package.CMakePackageBase import *
 class Package(CMakePackageBase):
     def __init__(self):
         CMakePackageBase.__init__(self)
-        root = CraftCore.standardDirs.craftRoot()
+        root = str(CraftCore.standardDirs.craftRoot())
         self.subinfo.options.configure.args = "-DCMAKE_INSTALL_PREFIX=" + root + " -DCMAKE_BUILD_TYPE=Debug"

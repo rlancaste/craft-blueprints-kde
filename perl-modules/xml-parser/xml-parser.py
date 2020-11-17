@@ -22,5 +22,5 @@ class subinfo(info.infoclass):
 class Package(PerlPackageBase):
     def __init__(self, **args):
         PerlPackageBase.__init__(self)
-        root = CraftCore.standardDirs.craftRoot()
+        root = str(CraftCore.standardDirs.craftRoot())
         self.subinfo.options.configure.args += f"EXPATINCPATH=\"{os.path.join(root, 'include')}\" EXPATLIBPATH=\"{os.path.join(root, 'lib')}\""

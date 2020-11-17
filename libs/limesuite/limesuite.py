@@ -23,7 +23,7 @@ class Package(CMakePackageBase):
     def __init__(self):
         CMakePackageBase.__init__(self)
         self.subinfo.options.useShadowBuild = False
-        root = CraftCore.standardDirs.craftRoot()
+        root = str(CraftCore.standardDirs.craftRoot())
         self.subinfo.options.configure.args = "-DENABLE_STREAM=ON -DENABLE_GUI=OFF -DENABLE_NOVENARF7=OFF -DENABLE_SOAPY_LMS7=OFF -DLIME_SUITE_EXTVER=release -DLIME_SUITE_ROOT=" + root
 
 

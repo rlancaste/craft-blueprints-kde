@@ -30,7 +30,7 @@ class Package(AutoToolsPackageBase):
         
     def postQmerge(self):
         packageName = "libwcs"
-        root = CraftCore.standardDirs.craftRoot()
+        root = str(CraftCore.standardDirs.craftRoot())
         craftLibDir = os.path.join(root,  'lib')
         utils.system("install_name_tool -add_rpath " + craftLibDir + " " + craftLibDir + "/" + packageName + ".dylib")
         utils.system("install_name_tool -id @rpath/" + packageName + ".dylib " + craftLibDir + "/" + packageName + ".dylib")

@@ -115,7 +115,7 @@ class Package(CMakePackageBase):
         
     def postQmerge(self):
         packageName = "libdbus-1.3"
-        root = CraftCore.standardDirs.craftRoot()
+        root = str(CraftCore.standardDirs.craftRoot())
         craftLibDir = os.path.join(root,  'lib')
         libDir = os.path.join(self.imageDir(), "lib")
         binDir = os.path.join(self.imageDir(), "bin")

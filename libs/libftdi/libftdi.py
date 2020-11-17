@@ -22,14 +22,14 @@ from Package.CMakePackageBase import *
 class Package(CMakePackageBase):
     def __init__(self):
         CMakePackageBase.__init__(self)
-        root = CraftCore.standardDirs.craftRoot()
+        root = str(CraftCore.standardDirs.craftRoot())
         self.subinfo.options.configure.args = "-DPYTHON_BINDINGS=OFF"
         #self.subinfo.options.configure.cflags = f"-I{root}/include"
         #self.subinfo.options.configure.cxxflags = f"-I{root}/include"
     
     def postQmerge(self):
         packageName = "libftdi1"
-        root = CraftCore.standardDirs.craftRoot()
+        root = str(CraftCore.standardDirs.craftRoot())
         craftLibDir = os.path.join(root,  'lib')
         utils.system("install_name_tool -add_rpath " + craftLibDir + " " + craftLibDir +"/" + packageName + ".dylib")
         utils.system("install_name_tool -id @rpath/" + packageName + ".dylib " + craftLibDir +"/" + packageName + ".dylib")

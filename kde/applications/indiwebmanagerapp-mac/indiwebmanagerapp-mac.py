@@ -80,7 +80,7 @@ class Package(CMakePackageBase):
         sourceDir = self.sourceDir()
         packageDir = self.packageDir()
         imageDir = self.imageDir()
-        craftRoot = CraftCore.standardDirs.craftRoot()
+        craftRoot = str(CraftCore.standardDirs.craftRoot())
         INDI_WEB_MANAGER_APP = os.path.join(buildDir , 'INDIWebManagerApp.app')
         INDI_WEB_MANAGER_APP_RESOURCES = os.path.join(INDI_WEB_MANAGER_APP , 'Contents' , 'Resources')
         INDI_WEB_MANAGER_APP_PLUGINS = os.path.join(INDI_WEB_MANAGER_APP , 'Contents' , 'PlugIns')
