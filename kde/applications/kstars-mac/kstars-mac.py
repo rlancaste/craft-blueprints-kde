@@ -92,6 +92,8 @@ class Package(CMakePackageBase):
         KSTARS_PLUGINS = os.path.join(KSTARS_APP , 'Contents' , 'PlugIns')
         KStarsMacFiles = os.path.join(packageDir , 'KStarsMacFiles')
         
+        #	The Data Directory (Note that this won't be needed if we can do it in the Cmakelists)
+        utils.system("cp -rf " + imageDir + "/share/kstars " + KSTARS_RESOURCES)
         #	The Translations Directory
         utils.system("cp -rf " + craftRoot + "/share/locale " + KSTARS_RESOURCES)
 				
