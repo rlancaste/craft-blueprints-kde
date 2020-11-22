@@ -30,7 +30,7 @@ class Package(AutoToolsPackageBase):
 
     def configure(self):
         self.enterSourceDir()
-        prefix = self.shell.toNativePath(CraftCore.standardDirs.craftRoot())
+        prefix = str(self.shell.toNativePath(CraftCore.standardDirs.craftRoot()))
         utils.system("./configure --prefix=" + prefix)
         return True
     
