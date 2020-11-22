@@ -31,7 +31,7 @@ from Package.AutoToolsPackageBase import *
 class Package(AutoToolsPackageBase):
     def __init__( self, **args ):
         AutoToolsPackageBase.__init__( self )
-        root = self.shell.toNativePath(CraftCore.standardDirs.craftRoot())
+        root = self.shell.toNativePath(str(CraftCore.standardDirs.craftRoot()))
         
         self.subinfo.options.useShadowBuild = False
         
@@ -40,7 +40,7 @@ class Package(AutoToolsPackageBase):
         
     def configure(self):
         #This is for the one in Craft Root
-        root = self.shell.toNativePath(CraftCore.standardDirs.craftRoot())
+        root = self.shell.toNativePath(str(CraftCore.standardDirs.craftRoot()))
         astrometryInstallDir = os.path.join(root,"astrometry")
         os.environ['INSTALL_DIR'] = astrometryInstallDir
         return AutoToolsPackageBase.configure(self)
