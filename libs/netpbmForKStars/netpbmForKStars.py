@@ -96,7 +96,7 @@ class Package(MakeFilePackageBase):
         utils.deleteFile(os.path.join(self.imageDir(), 'bin', 'spottopgm'))
         
         #This is for the one in a package for KStars
-        netpbmDir = os.path.join(CraftCore.standardDirs.craftRoot(), 'netpbm')
+        netpbmDir = os.path.join(str(CraftCore.standardDirs.craftRoot()), 'netpbm')
         #This is for the one in the craft dir
         #netpbmDir = CraftCore.standardDirs.craftRoot()
         

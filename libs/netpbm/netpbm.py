@@ -97,7 +97,7 @@ class Package(MakeFilePackageBase):
         #This is for the one in a package for KStars
         #netpbmDir = os.path.join(CraftCore.standardDirs.craftRoot(), 'netpbm')
         #This is for the one in the craft dir
-        netpbmDir = CraftCore.standardDirs.craftRoot()
+        netpbmDir = str(CraftCore.standardDirs.craftRoot())
         
         binaryDir = os.path.join(netpbmDir, 'bin')
         includeDir = os.path.join(netpbmDir,  'include')
