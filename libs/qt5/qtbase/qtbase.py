@@ -11,6 +11,9 @@ class subinfo(info.infoclass):
         self.options.dynamic.registerOption("buildDoc", True)
         self.options.dynamic.registerOption("libInfix", "")
         self.options.dynamic.registerOption("useLtcg", False)
+        self.options.dynamic.registerOption("withMysql", not CraftCore.compiler.isMacOS)
+        self.options.dynamic.registerOption("withDBus", True)
+        self.options.dynamic.registerOption("withGlib", not CraftCore.compiler.isWindows)
 
     def setTargets(self):
         self.versionInfo.setDefaultValues()
@@ -19,13 +22,17 @@ class subinfo(info.infoclass):
             qtVer = CraftVersion(ver)
             if ver == "dev":
                 self.patchToApply[ver] = []
-            if qtVer >= "5.14.0":
+            if qtVer >= "5.15.0":
                 self.patchToApply[ver] = [
-                    ("qdbus-manager-quit-5.7.patch", 1),  # https://phabricator.kde.org/D2545#69186
-                    ("workaround-mingw-egl.diff", 1),
-                    ("fix_GenericDataLocation_mac.patch", 1),
-                    ("qstandardpaths-extra-dirs.patch", 1),
-                    ("fix-harfbuzz.diff", 1),
+                    (".qt-5.15.0", 1)
+                ]
+            elif qtVer >= CraftVersion("5.12.10"):
+                self.patchToApply[ver] = [
+                    (".qt-5.12.10", 1)
+                ]
+            elif qtVer >= CraftVersion("5.12.9"):
+                self.patchToApply[ver] = [
+                    (".qt-5.12.9", 1)
                 ]
             elif qtVer >= CraftVersion("5.12.7"):
                 self.patchToApply[ver] = [
@@ -61,47 +68,21 @@ class subinfo(info.infoclass):
                     ("0001-QComboBox-WindowVistaStyle-restore-focus-rect.patch", 1), # https://codereview.qt-project.org/#/c/248945/
                     (".qt-5.12.0", 1)
                 ]
-            elif qtVer >= CraftVersion("5.11.1"):
-                self.patchToApply[ver] = [
-                    ("qdbus-manager-quit-5.7.patch", 1),  # https://phabricator.kde.org/D2545#69186
-                    ("workaround-mingw-egl.diff", 1),
-                    ("fix_GenericDataLocation_mac.patch", 1),
-                    ("qstandardpaths-extra-dirs.patch", 1),
-                ]
-            elif qtVer >= CraftVersion("5.11"):
-                self.patchToApply[ver] = [
-                    ("qdbus-manager-quit-5.7.patch", 1), # https://phabricator.kde.org/D2545#69186
-                    ("0001-Fix-private-headers.patch", 1),  # https://bugreports.qt.io/browse/QTBUG-37417
-                    ("workaround-mingw-egl.diff", 1),
-                    ("fix_GenericDataLocation_mac.patch", 1),
-                    ("qstandardpaths-extra-dirs.patch", 1),
-                ]
-            elif qtVer >= CraftVersion("5.10"):
-                self.patchToApply[ver] = [
-                    ("qdbus-manager-quit-5.7.patch", 1), # https://phabricator.kde.org/D2545#69186
-                    ("0001-Fix-private-headers.patch", 1),  # https://bugreports.qt.io/browse/QTBUG-37417
-                    ("workaround-mingw-egl.diff", 1),
-                    ("fix_AppDataLocation_mac.patch", 1), #https://bugreports.qt.io/browse/QTBUG-61159
-                    ("fix_GenericDataLocation_mac.patch", 1),
-                    ("qstandardpaths-extra-dirs.patch", 1),
-                ]
 
-
-        self.patchToApply["5.11.2"] += [
-            ("0001-Export-qt_open64-from-QtCore.patch", 1), # fix 32 bit unix builds, backport of 4fc4f7b0ce0e6ee186a7d7fe9b5dd20e94efe432
-        ]
-
-        self.patchLevel["5.11.0"] = 2
-        self.patchLevel["5.11.2"] = 3
         self.patchLevel["5.12.0"] = 2
         self.patchLevel["5.12.1"] = 2
         self.patchLevel["5.12.3"] = 1
+        self.patchLevel["5.12.9"] = 1
+        self.patchLevel["5.12.10"] = 1
+        self.patchLevel["5.15.0"] = 4
+        self.patchLevel["5.15.1"] = 4
         self.description = "a cross-platform application framework"
 
     def setDependencies(self):
         if CraftCore.settings.getboolean("Packager", "UseCache") and not CraftCore.settings.getboolean("QtSDK", "Enabled", False):
             self.buildDependencies["dev-utils/qtbinpatcher"] = None
         self.runtimeDependencies["virtual/base"] = None
+        self.buildDependencies["dev-utils/pkg-config"] = None
         self.buildDependencies["dev-utils/perl"] = None
         self.buildDependencies["dev-utils/flexbison"] = None
         if not self.options.buildStatic:
@@ -109,10 +90,19 @@ class subinfo(info.infoclass):
                 self.runtimeDependencies["libs/openssl"] = None
             else:
                 self.runtimeDependencies["libs/openssl"] = "1.1"
-            self.runtimeDependencies["libs/dbus"] = None
-            self.runtimeDependencies["binary/mysql"] = None
+            if self.options.dynamic.withDBus:
+                self.runtimeDependencies["libs/dbus"] = None
+            if self.options.dynamic.withMysql:
+                self.runtimeDependencies["binary/mysql"] = None
             self.runtimeDependencies["libs/icu"] = None
             self.runtimeDependencies["libs/zlib"] = None
+            self.runtimeDependencies["libs/libzstd"] = None
+            self.runtimeDependencies["libs/libpng"] = None
+            self.runtimeDependencies["libs/libjpeg-turbo"] = None
+            self.runtimeDependencies["libs/sqlite"] = None
+            self.runtimeDependencies["libs/pcre2"] = None
+            if CraftCore.compiler.isUnix and self.options.dynamic.withGlib:
+                self.runtimeDependencies["libs/glib"] = None
 
 
 class QtPackage(Qt5CorePackageBase):
@@ -121,11 +111,11 @@ class QtPackage(Qt5CorePackageBase):
 
     def configure(self, unused1=None, unused2=""):
         # https://github.com/qt/qtbase/blob/5.14/mkspecs/common/macx.conf#L8
-        if CraftCore.compiler.isMacOS and self.qtVer >= "5.12":
-            if self.qtVer >= "5.12":
-                mac_required = "10.12"
-            elif self.qtVer >= "5.14":
+        if CraftCore.compiler.isMacOS:
+            if self.qtVer >= "5.14":
                 mac_required = "10.13"
+            elif self.qtVer >= "5.12":
+                mac_required = "10.12"
             if not CraftVersion(os.environ["MACOSX_DEPLOYMENT_TARGET"]) >= mac_required:
                 raise BlueprintException(f"Qt requires MACOSX_DEPLOYMENT_TARGET to be >= {mac_required}", self)
         with self.getQtBaseEnv():
@@ -145,8 +135,26 @@ class QtPackage(Qt5CorePackageBase):
             if self.subinfo.options.dynamic.libInfix:
                 command += f"-qtlibinfix {self.subinfo.options.dynamic.libInfix} "
             command += f"-headerdir {os.path.join(CraftStandardDirs.craftRoot(), 'include', 'qt5')} "
-            command += "-qt-libpng "
-            command += "-qt-libjpeg "
+            command += "-pkg-config "
+
+            if self.subinfo.options.isActive("libs/libpng"):
+                command += "-system-libpng "
+            else:
+                command += "-qt-libpng "
+            if self.subinfo.options.isActive("libs/libjpeg-turbo"):
+                command += "-system-libjpeg "
+            else:
+                command += "-qt-libjpeg "
+            if self.subinfo.options.isActive("libs/sqlite"):
+                command += "-system-sqlite "
+            if self.subinfo.options.isActive("libs/pcre2"):
+                command += "-system-pcre "
+            if self.subinfo.options.isActive("libs/zlib"):
+                command += " -system-zlib "
+                if CraftCore.compiler.isMSVC():
+                    command += " ZLIB_LIBS=zlib.lib "
+
+            command += "-qt-doubleconversion "
 
             command += "-mp "
 
@@ -189,22 +197,24 @@ class QtPackage(Qt5CorePackageBase):
                             command += f" OPENSSL_LIBS=\"-llibssl -llibcrypto\" "
                         else:
                             command += f" OPENSSL_LIBS=\"-lssl -lcrypto\" "
-                if self.subinfo.options.isActive("binary/mysql"):
+                if self.subinfo.options.dynamic.withMysql:
                     command += " -sql-mysql "
-                if self.subinfo.options.isActive("libs/dbus"):
+                else:
+                    command += " -no-sql-mysql "
+                if self.subinfo.options.dynamic.withDBus:
                     command += " -qdbus -dbus-runtime -I \"%s\" -I \"%s\" " % (
                         os.path.join(CraftStandardDirs.craftRoot(), "include", "dbus-1.0"),
                         os.path.join(CraftStandardDirs.craftRoot(), "lib", "dbus-1.0", "include"))
                 else:
                     command += " -no-dbus "
                 if self.subinfo.options.isActive("libs/icu"):
+                    icuIncDir = os.path.join(CraftCore.standardDirs.craftRoot(), "include")
+                    command += f" ICU_INCDIR=\"{icuIncDir}\""
                     command += " -icu "
                 else:
                     command += " -no-icu "
-                if self.subinfo.options.isActive("libs/zlib"):
-                    command += " -system-zlib "
-                    if CraftCore.compiler.isMSVC():
-                        command += " ZLIB_LIBS=zlib.lib "
+                if not self.subinfo.options.dynamic.withGlib:
+                    command += " -no-glib "
             else:
                 command += " -static -static-runtime "
 
@@ -218,6 +228,8 @@ class QtPackage(Qt5CorePackageBase):
 
             if CraftCore.compiler.isLinux:
                 command += """-R "../lib" """
+            elif CraftCore.compiler.isMacOS:
+                command += f"""-R "{CraftCore.standardDirs.craftRoot()}/lib" """
 
             if CraftCore.compiler.isMinGW() and self.qtVer < "5.10":
                 command += """ "QMAKE_CXXFLAGS += -Wa,-mbig-obj" """
