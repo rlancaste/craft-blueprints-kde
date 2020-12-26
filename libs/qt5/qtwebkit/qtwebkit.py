@@ -4,7 +4,8 @@ import info
 
 class subinfo(info.infoclass):
     def registerOptions(self):
-        self.parent.package.categoryInfo.platforms = CraftCore.compiler.Compiler.NoCompiler if CraftCore.compiler.isMinGW() else CraftCore.compiler.Compiler.All
+        if CraftCore.compiler.isMinGW():
+            self.options.dynamic.setDefault("buildType", "Release")
 
     def setTargets(self):
         self.versionInfo.setDefaultValues()
@@ -15,19 +16,21 @@ class subinfo(info.infoclass):
                 self.patchToApply[ver] = [("build-with-mysql.diff", 1),
                                           ("disable-icu-test.diff", 1)]
 
-        self.patchToApply["5.212"] = [("qtwebkit-20181022.patch", 1)]
+        self.patchToApply["5.212"] = [("qtwebkit-20181022.patch", 1),
+                                      ("0001-gettickcount64-compatibility-xp.patch", 1),# https://raw.githubusercontent.com/Alexpux/MINGW-packages/2cfdf054df2c826d7c61237ee5ac2453b0f3964d/mingw-w64-qtwebkit/0001-gettickcount64-compatibility-xp.patch
+                                      ("0004-msvc-bug-not-mingw.patch", 1),# https://raw.githubusercontent.com/Alexpux/MINGW-packages/2cfdf054df2c826d7c61237ee5ac2453b0f3964d/mingw-w64-qtwebkit/0004-msvc-bug-not-mingw.patch
+                                      ("fix_mac.diff", 1) # https://raw.githubusercontent.com/OSGeo/homebrew-osgeo4mac/742b2afb6b85f9ba52d457ef63b1bb947f3dfcc0/Formula/qt5-webkit.rb
+                                      ]
         self.patchToApply["dev"] = [("qtwebkit-20181022.patch", 1)]
 
-        self.svnTargets["5.10"] = self.svnTargets["5.9"]
-        self.svnTargets["5.11"] = self.svnTargets["5.9"]
-        for ver in ["5.12"]:
+        for ver in ["5.12", "5.15"]:
             self.svnTargets[ver] = self.svnTargets["5.212"]
             self.patchToApply[ver] = self.patchToApply["5.212"]
 
         # replace tarbals by git branches
-        branchRegEx = re.compile("\d\.\d+\.\d+")
+        branchRegEx = re.compile(r"(\d\.\d+)\.\d+")
         for ver in self.versionInfo.tarballs():
-            branch = branchRegEx.findall(ver)[0][:-2]
+            branch = branchRegEx.findall(ver)[0]
             del self.targets[ver]
             if ver in self.targetInstSrc:
                 del self.targetInstSrc[ver]
@@ -48,6 +51,7 @@ class subinfo(info.infoclass):
         self.runtimeDependencies["libs/zlib"] = None
         self.runtimeDependencies["libs/libpng"] = None
         self.runtimeDependencies["libs/libjpeg-turbo"] = None
+        self.runtimeDependencies["libs/webp"] = None
         self.runtimeDependencies["libs/qt5/qtbase"] = None
         self.runtimeDependencies["libs/qt5/qtscript"] = None
         self.runtimeDependencies["libs/qt5/qtdeclarative"] = None
@@ -94,10 +98,17 @@ class CMakePackage(CMakePackageBase):
                                                "-DENABLE_NETSCAPE_PLUGIN_API=OFF -DUSE_GSTREAMER=OFF " \
                                                "-DUSE_QT_MULTIMEDIA=ON -DUSE_MEDIA_FOUNDATION=OFF -DUSE_LIBHYPHEN=OFF"
         if CraftCore.compiler.isMSVC():
-            # TODO: find out why this is failing
-            self.subinfo.options.configure.args += " -DENABLE_WEBKIT2=OFF"
+            if not CraftCore.compiler.isMSVC2019():
+                # TODO: find out why this is failing
+                self.subinfo.options.configure.args += " -DENABLE_WEBKIT2=OFF"
             # TODO: why?
             self.subinfo.options.configure.args += """ -DCMAKE_CXX_FLAGS="-D_ENABLE_EXTENDED_ALIGNED_STORAGE" """
+        elif CraftCore.compiler.isGCC():
+            # don't spam warnings
+            self.subinfo.options.configure.args += """ -DCMAKE_CXX_FLAGS="-w" """
+            if CraftCore.compiler.isMinGW():
+                self.subinfo.options.configure.args += """ -DCMAKE_CXX_FLAGS_RELEASE="-g0 -O3" """
+
 
 
 class Package(Qt5CoreSdkPackageBase):

@@ -1,7 +1,7 @@
-diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' qtbase-opensource-src-5.9.4.orig/src/gui/gui.pro qtbase-opensource-src-5.9.4/src/gui/gui.pro
---- qtbase-opensource-src-5.9.4.orig/src/gui/gui.pro	2018-01-16 07:53:43.000000000 +0100
-+++ qtbase-opensource-src-5.9.4/src/gui/gui.pro	2018-02-14 17:57:24.715193300 +0100
-@@ -56,15 +56,17 @@
+diff -Nrub -x '*~' -x '*\.rej' -x '*\.orig' -x'*\.o' -x '*\.pyc' qtbase-everywhere-src-5.10.0.orig/src/gui/gui.pro qtbase-everywhere-src-5.10.0/src/gui/gui.pro
+--- qtbase-everywhere-src-5.10.0.orig/src/gui/gui.pro	2017-11-30 14:49:46.000000000 +0100
++++ qtbase-everywhere-src-5.10.0/src/gui/gui.pro	2018-02-14 16:33:24.871818700 +0100
+@@ -57,15 +57,17 @@
  win32: CMAKE_WINDOWS_BUILD = True
  
  qtConfig(angle) {
